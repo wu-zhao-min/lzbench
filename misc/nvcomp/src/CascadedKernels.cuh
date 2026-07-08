@@ -35,6 +35,16 @@
 
 #include <cub/cub.cuh>
 
+#if CCCL_MAJOR_VERSION >= 3
+    using libnvcomp_sum_type = cuda::std::plus<>;
+    using libnvcomp_max_type = cuda::maximum<>;
+    using libnvcomp_min_type = cuda::minimum<>;
+#else
+    using libnvcomp_sum_type = cub::Sum;
+    using libnvcomp_max_type = cub::Max;
+    using libnvcomp_min_type = cub::Min;
+#endif
+
 namespace nvcomp
 {
 
@@ -342,7 +352,7 @@ __device__ void block_delta_decompress(
     data_type aggregate;
     BlockScan(temp_storage)
         .ExclusiveScan(
-            input_val, output_val, initial_value, cub::Sum(), aggregate);
+            input_val, output_val, initial_value, libnvcomp_sum_type(), aggregate);
     initial_value += aggregate;
 
     if (idx < input_num_elements)
@@ -397,10 +407,10 @@ __device__ void get_for_bitwidth(
   }
 
   signed_data_type minimum
-      = BlockReduce(temp_storage).Reduce(thread_data, cub::Min(), num_valid);
+      = BlockReduce(temp_storage).Reduce(thread_data, libnvcomp_min_type(), num_valid);
   __syncthreads();
   signed_data_type maximum
-      = BlockReduce(temp_storage).Reduce(thread_data, cub::Max(), num_valid);
+      = BlockReduce(temp_storage).Reduce(thread_data, libnvcomp_max_type(), num_valid);
   __syncthreads();
 
   const int num_rounds = roundUpDiv(num_elements, threadblock_size);
@@ -414,10 +424,10 @@ __device__ void get_for_bitwidth(
     }
 
     const signed_data_type local_min
-        = BlockReduce(temp_storage).Reduce(thread_data, cub::Min(), num_valid);
+        = BlockReduce(temp_storage).Reduce(thread_data, libnvcomp_min_type(), num_valid);
     __syncthreads();
     const signed_data_type local_max
-        = BlockReduce(temp_storage).Reduce(thread_data, cub::Max(), num_valid);
+        = BlockReduce(temp_storage).Reduce(thread_data, libnvcomp_max_type(), num_valid);
     __syncthreads();
 
     if (threadIdx.x == 0 && local_min < minimum)

@@ -6,8 +6,8 @@
 @finalout
 @c %**end of header
 
-@set UPDATED 9 January 2025
-@set VERSION 1.15
+@set UPDATED 7 March 2026
+@set VERSION 1.16
 
 @dircategory Compression
 @direntry
@@ -49,10 +49,11 @@ This manual is for Lzlib (version @value{VERSION}, @value{UPDATED}).
 * Examples::                 A small tutorial with examples
 * Problems::                 Reporting bugs
 * Concept index::            Index of concepts
+* Function index::           Index of functions and constants
 @end menu
 
 @sp 1
-Copyright @copyright{} 2009-2025 Antonio Diaz Diaz.
+Copyright @copyright{} 2009-2026 Antonio Diaz Diaz.
 
 This manual is free documentation: you have unlimited permission to copy,
 distribute, and modify it.
@@ -93,7 +94,7 @@ interface.
 
 Compression/decompression is done when the read function is called. This
 means the value returned by the position functions is not updated until a
-read call, even if a lot of data are written. If you want the data to be
+read call, even if a lot of data are written. If you need the data to be
 compressed in advance, just call the read function with a @var{size} equal
 to 0.
 
@@ -192,7 +193,7 @@ the functionality required by the application.
 @end example
 @end deftypefun
 
-@deftypevr Constant {const char *} LZ_version_string
+@deftypevr Constant @code{const char *} LZ_version_string
 This string constant is defined in the header file @file{lzlib.h} and
 represents the version of the library being used at compile time.
 @end deftypevr
@@ -297,7 +298,7 @@ valid sizes, it is rounded upwards by adding up to
 range from 5 to 273. Larger values usually give better compression ratios
 but longer compression times.
 
-If @var{dictionary_size} is 65535 and @var{match_len_limit} is 16, the fast
+If @var{dictionary_size} is 65_535 and @var{match_len_limit} is 16, the fast
 variant of LZMA is chosen, which produces identical compressed output as
 @w{@samp{lzip -0}}. (The dictionary size used is rounded upwards to
 @w{64 KiB}).
@@ -639,38 +640,40 @@ to determine whether a call failed. If the call failed, then you can
 examine @samp{LZ_(de)compress_errno}.
 
 The error codes are defined in the header file @file{lzlib.h}.
-@samp{LZ_Errno} is an enum type:
 
-@deftypevr Constant {LZ_Errno} LZ_ok
+@deftp {Data Type} enum LZ_Errno
+This is the type of the error codes, and these are the possible values:
+
+@deftypevr Constant @code{LZ_Errno} LZ_ok
 The value of this constant is 0 and is used to indicate that there is no error.
 @end deftypevr
 
-@deftypevr Constant {LZ_Errno} LZ_bad_argument
+@deftypevr Constant @code{LZ_Errno} LZ_bad_argument
 At least one of the arguments passed to the library function was invalid.
 @end deftypevr
 
-@deftypevr Constant {LZ_Errno} LZ_mem_error
+@deftypevr Constant @code{LZ_Errno} LZ_mem_error
 No memory available. The system cannot allocate more virtual memory because
 its capacity is full.
 @end deftypevr
 
-@deftypevr Constant {LZ_Errno} LZ_sequence_error
+@deftypevr Constant @code{LZ_Errno} LZ_sequence_error
 A library function was called in the wrong order. For example
 @samp{LZ_compress_restart_member} was called before
 @samp{LZ_compress_member_finished} indicated that the current member is
 finished.
 @end deftypevr
 
-@deftypevr Constant {LZ_Errno} LZ_header_error
+@deftypevr Constant @code{LZ_Errno} LZ_header_error
 An invalid member header (one with the wrong magic bytes) was read. If this
 happens at the end of the data stream it may indicate trailing data.
 @end deftypevr
 
-@deftypevr Constant {LZ_Errno} LZ_unexpected_eof
+@deftypevr Constant @code{LZ_Errno} LZ_unexpected_eof
 The end of the data stream was reached in the middle of a member.
 @end deftypevr
 
-@deftypevr Constant {LZ_Errno} LZ_data_error
+@deftypevr Constant @code{LZ_Errno} LZ_data_error
 The data stream is corrupt. If @samp{LZ_decompress_member_position} is 6 or
 less, it indicates either a format version not supported, an invalid
 dictionary size, a nonzero first LZMA byte, a corrupt header in a multimember
@@ -679,9 +682,10 @@ Lziprecover can be used to repair some of these errors and to remove
 conflicting trailing data from a file.
 @end deftypevr
 
-@deftypevr Constant {LZ_Errno} LZ_library_error
+@deftypevr Constant @code{LZ_Errno} LZ_library_error
 A bug was detected in the library. Please, report it. @xref{Problems}.
 @end deftypevr
+@end deftp
 
 
 @node Error messages
@@ -737,6 +741,9 @@ standard input to standard output. A hyphen @samp{-} used as a @var{file}
 argument means standard input. It can be mixed with other @var{files} and is
 read just once, the first time it appears in the command line. Remember to
 prepend @file{./} to any file name beginning with a hyphen, or use @samp{--}.
+It is the responsibility of the caller to check that the file names in the
+command line are valid. (For example, that they do not contain unprintable
+characters).
 
 @noindent
 minilzip supports the following
@@ -747,8 +754,10 @@ minilzip supports the following
 
 @table @code
 @item -h
-@itemx --help
 Print an informative help message describing the options and exit.
+
+@item --help
+Print the full help and exit.
 
 @item -V
 @itemx --version
@@ -809,7 +818,8 @@ Keep (don't delete) input files during compression or decompression.
 When compressing, set the match length limit in bytes. After a match this
 long is found, the search is finished. Valid values range from 5 to 273.
 Larger values usually give better compression ratios but longer compression
-times.
+times. A match is a Lempel-Ziv back-reference coded as a distance-length
+pair.
 
 @item -o @var{file}
 @itemx --output=@var{file}
@@ -836,7 +846,7 @@ each file the largest dictionary size that does not exceed neither the file
 size nor this limit. Valid values range from @w{4 KiB} to @w{512 MiB}.
 Values 12 to 29 are interpreted as powers of two, meaning 2^12 to 2^29
 bytes. Dictionary sizes are quantized so that they can be coded in just one
-byte (@pxref{coded-dict-size}). If the size specified does not match one of
+byte (@pxref{coded dict size}). If the size specified does not match one of
 the valid sizes, it is rounded upwards by adding up to @w{(@var{bytes} / 8)}
 to it.
 
@@ -932,7 +942,9 @@ version of lzlib being used and the value of LZ_API_VERSION (if defined).
 
 Numbers given as arguments to options may be expressed in decimal,
 hexadecimal, or octal (using the same syntax as integer constants in C++),
-and may be followed by a multiplier and an optional @samp{B} for "byte".
+may contain underscore separators between groups of 3 or more digits (2 or
+more digits for hexadecimal), and may be followed by a multiplier and an
+optional @samp{B} for "byte". (1_234_567kB, 4KiB, 0x1234_5678, 07_777_777).
 
 Table of SI and binary prefixes (unit multipliers):
 
@@ -1009,7 +1021,7 @@ A four byte string, identifying the lzip format, with the value "LZIP"
 @item VN (version number, 1 byte)
 Just in case something needs to be modified in the future. 1 for now.
 
-@anchor{coded-dict-size}
+@anchor{coded dict size}
 @item DS (coded dictionary size, 1 byte)
 The dictionary size is calculated by taking a power of 2 (the base size)
 and subtracting from it a fraction between 0/16 and 7/16 of the base size.@*
@@ -1043,9 +1055,9 @@ Size of the original uncompressed data.
 Total size of the member, including header and trailer. This field acts
 as a distributed index, improves the checking of stream integrity, and
 facilitates the safe recovery of undamaged members from multimember files.
-Lzip limits the member size to @w{2 PiB} to prevent the data size field from
-overflowing.
-
+The index is built by traversing the members backwards from the end of the
+file. Lzip limits the member size to @w{2 PiB} to prevent the data size
+field from overflowing.
 @end table
 
 
@@ -1381,5 +1393,15 @@ find by running @w{@samp{minilzip --version}} and
 @unnumbered Concept index
 
 @printindex cp
+
+@node Function index
+@unnumbered Index of constants
+
+@printindex vr
+
+@sp 1
+@unnumbered Index of functions
+
+@printindex fn
 
 @bye

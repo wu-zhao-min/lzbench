@@ -1,3 +1,14 @@
+2026-03-06  Antonio Diaz Diaz  <antonio@gnu.org>
+
+	* Version 1.16 released.
+	* decoder.h: Make 'rd_min_available_bytes' = 'max_marker_size' - 5.
+	* minilzip.c (getnum): Accept underscore separators ('_').
+	  (do_decompress): With -vv print sizes, not ratios.
+	  (show_help): New argument 'bool full' to print usage or full help.
+	  (show_help): Print "*Exit status*" for section in man page.
+	  Print large numbers with underscore separators ('_').
+	* lzlib.texi: Add an index of functions and constants.
+
 2025-01-09  Antonio Diaz Diaz  <antonio@gnu.org>
 
 	* Version 1.15 released.
@@ -273,7 +284,7 @@
 	* Version 0.1 released.
 
 
-Copyright (C) 2009-2025 Antonio Diaz Diaz.
+Copyright (C) 2009-2026 Antonio Diaz Diaz.
 
 This file is a collection of facts, and thus it is not copyrightable, but just
 in case, you have unlimited permission to copy, distribute, and modify it.

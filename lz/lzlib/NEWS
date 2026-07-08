@@ -1,21 +1,18 @@
-Changes in version 1.15:
+Changes in version 1.16:
 
-Lzlib now reports a nonzero first LZMA byte as a LZ_data_error.
+An index of functions and constants has been added to the manual.
 
-minilzip now exits with error status 2 if any empty member is found in a
-multimember file.
+Changes to minilzip:
 
-LZ_Errno, LZ_Encoder, and LZ_Decoder are now declared in lzlib.h as typedef.
+  '-dvv' and '-tvv' now print (de)compressed sizes instead of compression
+  ratio. (Sizes are more informative than compression ratio).
 
-The targets 'lib' and 'bin' have been added to Makefile.in. 'lib' is the new
-default and builds just the library. 'bin' builds both the library and
-minilzip.
+  Large numbers in option arguments are now accepted with underscore
+  separators (-s 123_456_789).
 
-minilzip is no longer built by default.
+  Large numbers are now printed with underscore separators (123_456_789).
 
-'install-bin' installs minilzip and its man page again.
+  '-h' now prints a short help screen containing only the command-line
+  options. For full help, use '--help'.
 
-To improve portability, the linker option '--soname' is now used conditionally.
-(Reported by Michael Sullivan).
-
-The use of the target 'bin' has been documented in INSTALL.
+  'EXIT STATUS' now has its own section in the man page.

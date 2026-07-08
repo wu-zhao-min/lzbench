@@ -30,10 +30,10 @@
 #define TAMP_POLL_CONTINUE ((tamp_res)127)
 
 // encodes [min_pattern_bytes, min_pattern_bytes + 14] pattern lengths (14 = FLUSH pattern, used in secondary reads)
-static const uint8_t huffman_codes[] = {0x0,  0x3,  0x8,  0xb,  0x14, 0x24, 0x26, 0x2b,
-                                        0x4b, 0x54, 0x94, 0x95, 0xaa, 0x27, 0xab};
+TAMP_STATIC_CONST uint8_t huffman_codes[] = {0x0,  0x3,  0x8,  0xb,  0x14, 0x24, 0x26, 0x2b,
+                                             0x4b, 0x54, 0x94, 0x95, 0xaa, 0x27, 0xab};
 // These bit lengths pre-add the 1 bit for the 0-value is_literal flag.
-static const uint8_t huffman_bits[] = {0x2, 0x3, 0x5, 0x5, 0x6, 0x7, 0x7, 0x7, 0x8, 0x8, 0x9, 0x9, 0x9, 0x7, 0x09};
+TAMP_STATIC_CONST uint8_t huffman_bits[] = {0x2, 0x3, 0x5, 0x5, 0x6, 0x7, 0x7, 0x7, 0x8, 0x8, 0x9, 0x9, 0x9, 0x7, 0x09};
 
 #if TAMP_EXTENDED_COMPRESS
 #define RLE_MAX_COUNT ((14 << 4) + 15 + 2)            // 241
@@ -181,8 +181,10 @@ TAMP_OPTIMIZE_SIZE tamp_res tamp_compressor_init(TampCompressor* compressor, con
 #endif
     };
     if (!conf) conf = &conf_default;
-    if (conf->window < 8 || conf->window > 15) return TAMP_INVALID_CONF;
-    if (conf->literal < 5 || conf->literal > 8) return TAMP_INVALID_CONF;
+    uint8_t window_bits = conf->window;
+    uint8_t literal_bits = conf->literal;
+    if (window_bits < 8 || window_bits > 15) return TAMP_INVALID_CONF;
+    if (literal_bits < 5 || literal_bits > 8) return TAMP_INVALID_CONF;
     if (conf->append && (!conf->dictionary_reset || conf->use_custom_dictionary)) return TAMP_INVALID_CONF;
 #if !TAMP_EXTENDED_COMPRESS
     if (conf->extended) return TAMP_INVALID_CONF;  // Extended requested but not compiled in
@@ -206,6 +208,9 @@ TAMP_OPTIMIZE_SIZE tamp_res tamp_compressor_init(TampCompressor* compressor, con
         // previous stream's trailing FLUSH, this triggers a dictionary reset.
         write_to_bit_buffer(compressor, FLUSH_CODE, 9);
         compressor->bit_buffer_pos = 16;
+        // This FLUSH is the most recently emitted token; mark it so an immediate
+        // redundant flush() doesn't append a second FLUSH and over-signal a reset.
+        compressor->last_was_flush = 1;
     } else {
         // Header byte 1: [window:3][literal:2][use_custom_dictionary:1][extended:1][more_headers:1]
         uint8_t header = ((conf->window - 8) << 5) | ((conf->literal - 5) << 3) | (conf->use_custom_dictionary << 2) |
@@ -368,10 +373,13 @@ static TAMP_NOINLINE tamp_res write_extended_match_token(TampCompressor* compres
     res = partial_flush(compressor, output, output_size, output_written_size);
     if (TAMP_UNLIKELY(res != TAMP_OK)) return res;
 
-    // Write to window (up to end of buffer, no wrap)
-    uint16_t remaining = WINDOW_SIZE - compressor->window_pos;
+    // Write to window (up to end of buffer, no wrap).
+    // Local uint16_t matches tamp_window_copy signature; struct field may be uint32_t (TAMP_ESP32).
+    uint16_t wp = compressor->window_pos;
+    uint16_t remaining = WINDOW_SIZE - wp;
     uint8_t window_write = MIN(count, remaining);
-    tamp_window_copy(compressor->window, &compressor->window_pos, position, window_write, window_mask);
+    tamp_window_copy(compressor->window, &wp, position, window_write, window_mask);
+    compressor->window_pos = wp;
 
     compressor->extended_match_count = 0;  // Position reset not needed - only read when count > 0
 
@@ -485,6 +493,10 @@ TAMP_NOINLINE tamp_res tamp_compressor_poll(TampCompressor* compressor, unsigned
     *output_written_size = 0;
 
     if (TAMP_UNLIKELY(compressor->input_size == 0)) return TAMP_OK;
+
+    // Real data is being processed: any pending RLE/extended state drained by a
+    // later flush() was also created here, so the next FLUSH won't be "consecutive".
+    compressor->last_was_flush = 0;
 
     // Make sure there's enough room in the bit buffer.
     res = partial_flush(compressor, &output, &output_size, output_written_size);
@@ -706,7 +718,14 @@ flush_check:
 flush_done:
     // At this point, up to 7 bits may remain in the compressor->bit_buffer
     // The output buffer may have 0 bytes remaining.
-    if (write_token && (compressor->bit_buffer_pos || compressor->conf.dictionary_reset)) {
+    // Suppress a redundant second consecutive FLUSH. Two FLUSH tokens with no data
+    // between them are the double-FLUSH dictionary-reset signal: a decompressor on a
+    // dictionary_reset stream would re-initialize its window, but THIS compressor's
+    // window is not reset here, desyncing the two and corrupting all later output.
+    // The sanctioned reset path, tamp_compressor_reset_dictionary(), clears
+    // last_was_flush before each flush so it can still emit the real double-FLUSH.
+    if (write_token && !compressor->last_was_flush &&
+        (compressor->bit_buffer_pos || compressor->conf.dictionary_reset)) {
         // We don't want to write the FLUSH token to the bit_buffer unless
         // we are confident that it'll wind up in the output buffer
         // in THIS function call.
@@ -714,6 +733,7 @@ flush_done:
         // end up accidentally writing multiple FLUSH tokens.
         if (TAMP_UNLIKELY(output_size < 2)) return TAMP_OUTPUT_FULL;
         write_to_bit_buffer(compressor, FLUSH_CODE, 9);
+        compressor->last_was_flush = 1;
     }
 
     // At this point, up to 16 bits may remain in the compressor->bit_buffer
@@ -782,6 +802,9 @@ TAMP_OPTIMIZE_SIZE tamp_res tamp_compressor_reset_dictionary(TampCompressor* com
     // FLUSH token even when bit_buffer_pos is 0.
     for (uint8_t i = 0; i < 2; i++) {
         size_t flush_written_size;
+        // Bypass the double-FLUSH suppression in flush(): here we *intend* to emit
+        // two consecutive FLUSH tokens, paired with the dictionary re-init below.
+        compressor->last_was_flush = 0;
         res = tamp_compressor_flush(compressor, output, output_size, &flush_written_size, true);
         *output_written_size += flush_written_size;
         if (TAMP_UNLIKELY(res != TAMP_OK)) return res;

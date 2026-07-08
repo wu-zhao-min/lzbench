@@ -22,6 +22,8 @@ typedef struct
 } codec_options_t;
 
 
+static const size_t LZBENCH_BSC_MAX_INPUT_SIZE = (size_t)1 << 30;
+
 
 int64_t lzbench_memcpy(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
 
@@ -116,7 +118,17 @@ int64_t lzbench_memcpy(char *inbuf, size_t insize, char *outbuf, size_t outsize,
     #define lzbench_density_decompress NULL
 #endif
 
-
+#ifndef BENCH_REMOVE_SKIM
+    char* lzbench_skim_init(size_t insize, size_t level, size_t);
+    void lzbench_skim_deinit(char* workmem);
+    int64_t lzbench_skim_compress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
+    int64_t lzbench_skim_decompress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
+#else
+    #define lzbench_skim_init NULL
+    #define lzbench_skim_deinit NULL
+    #define lzbench_skim_compress NULL
+    #define lzbench_skim_decompress NULL
+#endif // BENCH_REMOVE_SKIM
 
 #ifndef BENCH_REMOVE_FASTLZ
     int64_t lzbench_fastlz_compress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
@@ -404,6 +416,29 @@ int64_t lzbench_memcpy(char *inbuf, size_t insize, char *outbuf, size_t outsize,
 #endif
 
 
+#ifndef BENCH_REMOVE_OPENZL
+    char* lzbench_openzl_init_serial(size_t insize, size_t level, size_t);
+    template <typename TInteger>
+    char* lzbench_openzl_init_integer_t(size_t insize, size_t level, size_t windowLog);
+    #define lzbench_openzl_init_integer(TYPE) lzbench_openzl_init_integer_t<TYPE>
+    char* lzbench_openzl_init_generic(size_t insize, size_t level, size_t);
+    char* lzbench_openzl_init_zstd(size_t insize, size_t level, size_t);
+    char* lzbench_openzl_init_lz4(size_t insize, size_t level, size_t);
+    void lzbench_openzl_deinit(char* workmem);
+    int64_t lzbench_openzl_compress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
+    int64_t lzbench_openzl_decompress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
+#else
+    #define lzbench_openzl_init_serial NULL
+    #define lzbench_openzl_init_integer(TYPE) NULL
+    #define lzbench_openzl_init_generic NULL
+    #define lzbench_openzl_init_zstd NULL
+    #define lzbench_openzl_init_lz4 NULL
+    #define lzbench_openzl_deinit NULL
+    #define lzbench_openzl_compress NULL
+    #define lzbench_openzl_decompress NULL
+#endif
+
+
 #ifndef BENCH_REMOVE_PPMD
     int64_t lzbench_ppmd_compress(char* inbuf, size_t insize, char* outbuf, size_t outsize, codec_options_t *codec_options);
     int64_t lzbench_ppmd_decompress(char* inbuf, size_t insize, char* outbuf, size_t outsize, codec_options_t *codec_options);
@@ -619,6 +654,11 @@ int64_t lzbench_zxc_decompress(char *inbuf, size_t insize, char *outbuf,
     void lzbench_aceapex_deinit(char* workmem);
     int64_t lzbench_aceapex_compress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
     int64_t lzbench_aceapex_decompress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
+#ifdef BENCH_HAS_CUDA
+    char* lzbench_aceapex_cuda_init(size_t insize, size_t level, size_t threads);
+    void lzbench_aceapex_cuda_deinit(char* workmem);
+    int64_t lzbench_aceapex_cuda_decompress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
+#endif
     char* lzbench_aceapex_stream_init(size_t insize, size_t level, size_t threads);
     int64_t lzbench_aceapex_stream_compress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
     int64_t lzbench_aceapex_stream_decompress(char *inbuf, size_t insize, char *outbuf, size_t outsize, codec_options_t *codec_options);
@@ -637,3 +677,4 @@ int64_t lzbench_zxc_decompress(char *inbuf, size_t insize, char *outbuf,
     #define lzbench_aceapex3_compress NULL
     #define lzbench_aceapex3_decompress NULL
 #endif // BENCH_REMOVE_ACEAPEX
+

@@ -85,7 +85,8 @@ $(VPATH)/doc/$(pkgname).info : $(VPATH)/doc/$(pkgname).texi
 man : $(VPATH)/doc/$(progname).1
 
 $(VPATH)/doc/$(progname).1 : $(progname)
-	help2man -n 'reduces the size of files' -o $@ --info-page=$(pkgname) ./$(progname)
+	help2man -n 'reduces the size of files' \
+	  -o $@ --info-page=$(pkgname) ./$(progname)
 
 Makefile : $(VPATH)/configure $(VPATH)/Makefile.in
 	./config.status

@@ -1,5 +1,5 @@
 /* File to file example - Test program for the library lzlib
-   Copyright (C) 2010-2025 Antonio Diaz Diaz.
+   Copyright (C) 2010-2026 Antonio Diaz Diaz.
 
    This program is free software: you have unlimited permission
    to copy, distribute, and modify it.
@@ -34,22 +34,23 @@
 
 static void show_help( void )
   {
-  printf( "ffexample is an example program showing how file-to-file (de)compression can\n"
-          "be implemented using lzlib. The content of infile is compressed,\n"
-          "decompressed, or both, and then written to outfile.\n"
-          "\nUsage: ffexample operation [infile [outfile]]\n" );
-  printf( "\nOperation:\n"
-          "  -h        display this help and exit\n"
-          "  -c        compress infile to outfile\n"
-          "  -d        decompress infile to outfile\n"
-          "  -b        both (compress then decompress) infile to outfile\n"
-          "  -m        compress (multimember) infile to outfile\n"
-          "  -l        compress (1 member per line) infile to outfile\n"
-          "  -r        decompress with resync if data error or leading garbage\n"
-          "\nIf infile or outfile are omitted, or are specified as '-', standard input or\n"
-          "standard output are used in their place respectively.\n"
-          "\nReport bugs to lzip-bug@nongnu.org\n"
-          "Lzlib home page: http://www.nongnu.org/lzip/lzlib.html\n" );
+  fputs(
+    "ffexample is an example program showing how file-to-file (de)compression\n"
+    "can be implemented using lzlib. The content of infile is compressed,\n"
+    "decompressed, or both, and then written to outfile.\n"
+    "\nUsage: ffexample operation [infile [outfile]]\n", stdout );
+  fputs( "\nOperation:\n"
+    "  -h        display this help and exit\n"
+    "  -c        compress infile to outfile\n"
+    "  -d        decompress infile to outfile\n"
+    "  -b        both (compress then decompress) infile to outfile\n"
+    "  -m        compress (multimember) infile to outfile\n"
+    "  -l        compress (1 member per line) infile to outfile\n"
+    "  -r        decompress with resync if data error or leading garbage\n"
+    "\nIf infile or outfile are omitted, or are specified as '-', standard input or\n"
+    "standard output are used in their place respectively.\n"
+    "\nReport bugs to lzip-bug@nongnu.org\n"
+    "Lzlib home page: http://www.nongnu.org/lzip/lzlib.html\n", stdout );
   }
 
 

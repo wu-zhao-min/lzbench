@@ -1,5 +1,5 @@
 /* Lzcheck - Test program for the library lzlib
-   Copyright (C) 2009-2025 Antonio Diaz Diaz.
+   Copyright (C) 2009-2026 Antonio Diaz Diaz.
 
    This program is free software: you have unlimited permission
    to copy, distribute, and modify it.
@@ -355,7 +355,7 @@ static int check_members( FILE * const file, const int dictionary_size )
 int main( const int argc, const char * const argv[] )
   {
   int retval = 0, i;
-  int open_failures = 0;
+  unsigned open_failures = 0;
   const char opt = ( argc > 2 &&
     ( strcmp( argv[1], "-m" ) == 0 || strcmp( argv[1], "-s" ) == 0 ) ) ?
     argv[1][1] : 0;
@@ -391,7 +391,7 @@ int main( const int argc, const char * const argv[] )
     fclose( file );
     }
   if( open_failures > 0 && verbose )
-    fprintf( stderr, "lzcheck: warning: %d %s failed to open.\n",
+    fprintf( stderr, "lzcheck: warning: %u %s failed to open.\n",
              open_failures, ( open_failures == 1 ) ? "file" : "files" );
   if( retval == 0 && open_failures ) retval = 1;
   return retval;

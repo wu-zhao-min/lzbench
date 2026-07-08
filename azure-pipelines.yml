@@ -140,6 +140,13 @@ jobs:
 
 
       # gcc-9 and newer compilers
+      gcc-16 x86 64-bit [Ubuntu 24.04 Noble]:
+        imageName: 'ubuntu-24.04'
+        SELECTED_CC: gcc-16
+        SELECTED_CXX: g++-16
+        PACKAGES: 'g++-16'
+        ARTIFACT_SLUG: gcc-16-x86_64
+
       gcc-15 x86 64-bit [Ubuntu 24.04 Noble]:
         imageName: 'ubuntu-24.04'
         SELECTED_CC: gcc-15
@@ -305,9 +312,22 @@ jobs:
       fi
     displayName: '*** System and compiler info'
 
+  # Install Zig so the 'skim' codec (misc/skim, built via 'zig build-lib') is
+  # compiled and round-trip tested. Linux native builds only: a native x86_64
+  # libskim.a cannot be linked into the cross-compiled (QEMU) or 32-bit targets,
+  # and the macOS job is skipped on purpose; those keep skim disabled via the
+  # Makefile's 'command -v zig' auto-detection.
+  - script: |
+      sudo snap install zig --classic --channel=latest/beta
+      echo "##vso[task.prependpath]/snap/bin"
+      /snap/bin/zig version
+    displayName: '*** Install Zig (for skim; Linux native builds only)'
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), eq(variables['QEMU_INTERPRETER'], ''), not(contains(variables['MORE_OPTIONS'], '32-bit')))
+
   - script: |
       echo SELECTED_CC=$SELECTED_CC SELECTED_CXX=$SELECTED_CXX REAL_COMPILER_VER=$REAL_COMPILER_VER imageName=$(imageName) OS_NAME=$OS_NAME
       df -Th
+      command -v zig && zig version || echo "zig not installed - skim disabled"
 
       make -j2 CC="ccache $SELECTED_CC" CXX="ccache $SELECTED_CXX" $MORE_OPTIONS || exit 1
       ccache --show-stats
@@ -330,7 +350,19 @@ jobs:
       artifactName: 'lzbench-$(ARTIFACT_SLUG)'
 
   - script: |
-      $QEMU_INTERPRETER ./lzbench -eall ./lzbench || exit 1
+      $QEMU_INTERPRETER ./lzbench -eLZ -v5 ./lzbench || exit 1
+    displayName: '*** Run LZ'
+
+  - script: |
+      $QEMU_INTERPRETER ./lzbench -eSYMMETRIC -v5 ./lzbench || exit 1
+    displayName: '*** Run SYMMETRIC'
+
+  - script: |
+      $QEMU_INTERPRETER ./lzbench -eMISC -v5 ./lzbench || exit 1
+    displayName: '*** Run MISC'
+
+  - script: |
+      $QEMU_INTERPRETER ./lzbench -eFASTEST -t0,0 -T2 -jr . || exit 1
 
       RUN_TIME=$SECONDS
       echo --- Total time $(($RUN_TIME + $UPDATE_TIME + $BUILD_TIME)) seconds. Run time $RUN_TIME seconds. Build took $BUILD_TIME seconds. Packages updated in $UPDATE_TIME seconds.
@@ -338,7 +370,7 @@ jobs:
       rm -rf *
       df -Th
 
-    displayName: '*** Run'
+    displayName: '*** Run FASTEST (-T2 -jr)'
 
 
 - job:
@@ -389,11 +421,11 @@ jobs:
   - task: ExtractFiles@1
     inputs:
       archiveFilePatterns: '$(Build.ArtifactStagingDirectory)\mingw.7z'
-      destinationFolder: '$(Build.SourcesDirectory)\mingw'
+      destinationFolder: '$(Build.BinariesDirectory)\mingw'
 
   - script: |
       echo Building with $(toolchain) for $(arch) architecture
-      set PATH=$(Build.SourcesDirectory)\mingw\$(toolchain)\bin;%PATH%
+      set PATH=$(Build.BinariesDirectory)\mingw\$(toolchain)\bin;%PATH%
       where $(SELECTED_CC)
       $(SELECTED_CXX) --version
       mingw32-make -j2 CC=$(SELECTED_CC) CXX=$(SELECTED_CXX) $(MORE_OPTIONS) || exit 1
@@ -408,6 +440,17 @@ jobs:
       artifactName: 'lzbench-$(ARTIFACT_SLUG)'
 
   - script: |
-      echo Running a build for $(toolchain) for $(arch) architecture
-      lzbench.exe -eall lzbench.exe || exit 1
-    displayName: 'Run for $(arch) architecture'
+      lzbench.exe -eLZ -v5 lzbench.exe || exit 1
+    displayName: 'Run LZ for $(arch) architecture'
+
+  - script: |
+      lzbench.exe -eSYMMETRIC -v5 lzbench.exe || exit 1
+    displayName: 'Run SYMMETRIC for $(arch) architecture'
+
+  - script: |
+      lzbench.exe -eMISC -v5 lzbench.exe || exit 1
+    displayName: 'Run MISC for $(arch) architecture'
+
+  - script: |
+      lzbench.exe -eFASTEST -t0,0 -T2 -jr . || exit 1
+    displayName: 'Run FASTEST (-T2) for $(arch) architecture'

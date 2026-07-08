@@ -11,7 +11,7 @@ File: lzlib.info,  Node: Top,  Next: Introduction,  Up: (dir)
 Lzlib Manual
 ************
 
-This manual is for Lzlib (version 1.15, 9 January 2025).
+This manual is for Lzlib (version 1.16, 7 March 2026).
 
 * Menu:
 
@@ -28,11 +28,12 @@ This manual is for Lzlib (version 1.15, 9 January 2025).
 * Examples::                 A small tutorial with examples
 * Problems::                 Reporting bugs
 * Concept index::            Index of concepts
+* Function index::           Index of functions and constants
 
 
-   Copyright (C) 2009-2025 Antonio Diaz Diaz.
+Copyright (C) 2009-2026 Antonio Diaz Diaz.
 
-   This manual is free documentation: you have unlimited permission to copy,
+This manual is free documentation: you have unlimited permission to copy,
 distribute, and modify it.
 
 
@@ -46,49 +47,48 @@ decompression functions, including integrity checking of the decompressed
 data. The compressed data format used by the library is the lzip format.
 Lzlib is written in C and is distributed under a 2-clause BSD license.
 
-   The functions and variables forming the interface of the compression
-library are declared in the file 'lzlib.h'. Usage examples of the library
-are given in the files 'bbexample.c', 'ffexample.c', and 'minilzip.c' from
-the source distribution.
+The functions and variables forming the interface of the compression library
+are declared in the file 'lzlib.h'. Usage examples of the library are given
+in the files 'bbexample.c', 'ffexample.c', and 'minilzip.c' from the source
+distribution.
 
-   As 'lzlib.h' can be used in C and C++ programs, it must not impose a
-choice of system headers on the program by including one of them. Therefore
-it is the responsibility of the program using lzlib to include before
-'lzlib.h' some header that declares the type 'uint8_t'. There are at least
-four such headers in C and C++: 'stdint.h', 'cstdint', 'inttypes.h', and
-'cinttypes'.
+As 'lzlib.h' can be used in C and C++ programs, it must not impose a choice
+of system headers on the program by including one of them. Therefore it is
+the responsibility of the program using lzlib to include before 'lzlib.h'
+some header that declares the type 'uint8_t'. There are at least four such
+headers in C and C++: 'stdint.h', 'cstdint', 'inttypes.h', and 'cinttypes'.
 
-   All the library functions are thread safe. The library does not install
-any signal handler. The decoder checks the consistency of the compressed
-data, so the library should never crash even in case of corrupted input.
+All the library functions are thread safe. The library does not install any
+signal handler. The decoder checks the consistency of the compressed data,
+so the library should never crash even in case of corrupted input.
 
-   Compression/decompression is done by repeatedly calling a couple of
+Compression/decompression is done by repeatedly calling a couple of
 read/write functions until all the data have been processed by the library.
 This interface is safer and less error prone than the traditional zlib
 interface.
 
-   Compression/decompression is done when the read function is called. This
+Compression/decompression is done when the read function is called. This
 means the value returned by the position functions is not updated until a
-read call, even if a lot of data are written. If you want the data to be
+read call, even if a lot of data are written. If you need the data to be
 compressed in advance, just call the read function with a SIZE equal to 0.
 
-   If all the data to be compressed are written in advance, lzlib
-automatically adjusts the header of the compressed data to use the largest
-dictionary size that does not exceed neither the data size nor the limit
-given to 'LZ_compress_open'. This feature reduces the amount of memory
-needed for decompression and allows minilzip to produce identical
-compressed output as lzip.
+If all the data to be compressed are written in advance, lzlib automatically
+adjusts the header of the compressed data to use the largest dictionary size
+that does not exceed neither the data size nor the limit given to
+'LZ_compress_open'. This feature reduces the amount of memory needed for
+decompression and allows minilzip to produce identical compressed output as
+lzip.
 
-   Lzlib correctly decompresses a data stream which is the concatenation of
+Lzlib correctly decompresses a data stream which is the concatenation of
 two or more compressed data streams. The result is the concatenation of the
 corresponding decompressed data streams. Integrity testing of concatenated
 compressed data streams is also supported.
 
-   Lzlib is able to compress and decompress streams of unlimited size by
+Lzlib is able to compress and decompress streams of unlimited size by
 automatically creating multimember output. The members so created are large,
 about 2 PiB each.
 
-   In spite of its name (Lempel-Ziv-Markov chain-Algorithm), LZMA is not a
+In spite of its name (Lempel-Ziv-Markov chain-Algorithm), LZMA is not a
 concrete algorithm; it is more like "any algorithm using the LZMA coding
 scheme". For example, the option '-0' of lzip uses the scheme in almost the
 simplest way possible; issuing the longest match it can find, or a literal
@@ -97,25 +97,24 @@ coding sequences of minimum size than the one currently used by lzip could
 be developed, and the resulting sequence could also be coded using the LZMA
 coding scheme.
 
-   Lzlib currently implements two variants of the LZMA algorithm: fast
-(used by option '-0' of minilzip) and normal (used by all other compression
-levels).
+Lzlib currently implements two variants of the LZMA algorithm: fast (used by
+option '-0' of minilzip) and normal (used by all other compression levels).
 
-   The high compression of LZMA comes from combining two basic, well-proven
+The high compression of LZMA comes from combining two basic, well-proven
 compression ideas: sliding dictionaries (LZ77) and Markov models (the thing
 used by every compression algorithm that uses a range encoder or similar
 order-0 entropy coder as its last stage) with segregation of contexts
 according to what the bits are used for.
 
-   The ideas embodied in lzlib are due to (at least) the following people:
+The ideas embodied in lzlib are due to (at least) the following people:
 Abraham Lempel and Jacob Ziv (for the LZ algorithm), Andrei Markov (for the
 definition of Markov chains), G.N.N. Martin (for the definition of range
 encoding), Igor Pavlov (for putting all the above together in LZMA), and
 Julian Seward (for bzip2's CLI).
 
-   LANGUAGE NOTE: Uncompressed = not compressed = plain data; it may never
-have been compressed. Decompressed is used to refer to data which have
-undergone the process of decompression.
+LANGUAGE NOTE: Uncompressed = not compressed = plain data; it may never have
+been compressed. Decompressed is used to refer to data which have undergone
+the process of decompression.
 
 
 File: lzlib.info,  Node: Library version,  Next: Buffering,  Prev: Introduction,  Up: Top
@@ -144,10 +143,10 @@ of them are declared in 'lzlib.h'.
      LZ_API_VERSION was first defined in lzlib 1.8 to 1.
      Since lzlib 1.12, LZ_API_VERSION is defined as (major * 1000 + minor).
 
-   NOTE: Version test macros are the library's way of announcing
-functionality to the application. They should not be confused with feature
-test macros, which allow the application to announce to the library its
-desire to have certain symbols and prototypes exposed.
+NOTE: Version test macros are the library's way of announcing functionality
+to the application. They should not be confused with feature test macros,
+which allow the application to announce to the library its desire to have
+certain symbols and prototypes exposed.
 
  -- Function: int LZ_api_version ( void )
      If LZ_API_VERSION >= 1012, this function is declared in 'lzlib.h' (else
@@ -165,7 +164,7 @@ desire to have certain symbols and prototypes exposed.
               show_error( "lzlib 1.12 or newer needed." );
           #endif
 
- -- Constant: const char * LZ_version_string
+ -- Constant: 'const char *' LZ_version_string
      This string constant is defined in the header file 'lzlib.h' and
      represents the version of the library being used at compile time.
 
@@ -184,9 +183,9 @@ the dictionary size (sliding window). For efficiency reasons, the input
 buffer for compression is twice or sixteen times as large as the dictionary
 size.
 
-   Finally, for safety reasons, lzlib uses two more internal buffers.
+Finally, for safety reasons, lzlib uses two more internal buffers.
 
-   These are the four buffers used by lzlib, and their guaranteed minimum
+These are the four buffers used by lzlib, and their guaranteed minimum
 sizes:
 
    * Input compression buffer. Written to by the function
@@ -266,7 +265,7 @@ except 'LZ_compress_open' whose return value must be checked by calling
      range from 5 to 273. Larger values usually give better compression
      ratios but longer compression times.
 
-     If DICTIONARY_SIZE is 65535 and MATCH_LEN_LIMIT is 16, the fast
+     If DICTIONARY_SIZE is 65_535 and MATCH_LEN_LIMIT is 16, the fast
      variant of LZMA is chosen, which produces identical compressed output
      as 'lzip -0'. (The dictionary size used is rounded upwards to 64 KiB).
 
@@ -547,51 +546,54 @@ this return value only tells you that an error has occurred. To find out
 what kind of error it was, you need to check the error code by calling
 'LZ_(de)compress_errno'.
 
-   Library functions don't change the value returned by
+Library functions don't change the value returned by
 'LZ_(de)compress_errno' when they succeed; thus, the value returned by
 'LZ_(de)compress_errno' after a successful call is not necessarily LZ_ok,
 and you should not use 'LZ_(de)compress_errno' to determine whether a call
 failed. If the call failed, then you can examine 'LZ_(de)compress_errno'.
 
-   The error codes are defined in the header file 'lzlib.h'. 'LZ_Errno' is
-an enum type:
+The error codes are defined in the header file 'lzlib.h'.
 
- -- Constant: LZ_Errno LZ_ok
-     The value of this constant is 0 and is used to indicate that there is
-     no error.
+ -- Data Type: enum LZ_Errno
+     This is the type of the error codes, and these are the possible values:
 
- -- Constant: LZ_Errno LZ_bad_argument
-     At least one of the arguments passed to the library function was
-     invalid.
+      -- Constant: 'LZ_Errno' LZ_ok
+          The value of this constant is 0 and is used to indicate that
+          there is no error.
 
- -- Constant: LZ_Errno LZ_mem_error
-     No memory available. The system cannot allocate more virtual memory
-     because its capacity is full.
+      -- Constant: 'LZ_Errno' LZ_bad_argument
+          At least one of the arguments passed to the library function was
+          invalid.
 
- -- Constant: LZ_Errno LZ_sequence_error
-     A library function was called in the wrong order. For example
-     'LZ_compress_restart_member' was called before
-     'LZ_compress_member_finished' indicated that the current member is
-     finished.
+      -- Constant: 'LZ_Errno' LZ_mem_error
+          No memory available. The system cannot allocate more virtual
+          memory because its capacity is full.
 
- -- Constant: LZ_Errno LZ_header_error
-     An invalid member header (one with the wrong magic bytes) was read. If
-     this happens at the end of the data stream it may indicate trailing
-     data.
+      -- Constant: 'LZ_Errno' LZ_sequence_error
+          A library function was called in the wrong order. For example
+          'LZ_compress_restart_member' was called before
+          'LZ_compress_member_finished' indicated that the current member is
+          finished.
 
- -- Constant: LZ_Errno LZ_unexpected_eof
-     The end of the data stream was reached in the middle of a member.
+      -- Constant: 'LZ_Errno' LZ_header_error
+          An invalid member header (one with the wrong magic bytes) was
+          read. If this happens at the end of the data stream it may
+          indicate trailing data.
 
- -- Constant: LZ_Errno LZ_data_error
-     The data stream is corrupt. If 'LZ_decompress_member_position' is 6 or
-     less, it indicates either a format version not supported, an invalid
-     dictionary size, a nonzero first LZMA byte, a corrupt header in a
-     multimember data stream, or trailing data too similar to a valid lzip
-     header. Lziprecover can be used to repair some of these errors and to
-     remove conflicting trailing data from a file.
+      -- Constant: 'LZ_Errno' LZ_unexpected_eof
+          The end of the data stream was reached in the middle of a member.
 
- -- Constant: LZ_Errno LZ_library_error
-     A bug was detected in the library. Please, report it. *Note Problems::.
+      -- Constant: 'LZ_Errno' LZ_data_error
+          The data stream is corrupt. If 'LZ_decompress_member_position' is
+          6 or less, it indicates either a format version not supported, an
+          invalid dictionary size, a nonzero first LZMA byte, a corrupt
+          header in a multimember data stream, or trailing data too similar
+          to a valid lzip header. Lziprecover can be used to repair some of
+          these errors and to remove conflicting trailing data from a file.
+
+      -- Constant: 'LZ_Errno' LZ_library_error
+          A bug was detected in the library. Please, report it. *Note
+          Problems::.
 
 
 File: lzlib.info,  Node: Error messages,  Next: Invoking minilzip,  Prev: Error codes,  Up: Top
@@ -619,8 +621,8 @@ not intended to be installed because lzip has more features, but minilzip is
 well tested and you can use it as your main compressor if so you wish.
 *Note lzip: (lzip)Top.
 
-   Lzip is a lossless data compressor with a user interface similar to the
-one of gzip or bzip2. Lzip uses a simplified form of LZMA (Lempel-Ziv-Markov
+Lzip is a lossless data compressor with a user interface similar to the one
+of gzip or bzip2. Lzip uses a simplified form of LZMA (Lempel-Ziv-Markov
 chain-Algorithm) designed to achieve complete interoperability between
 implementations. The maximum dictionary size is 512 MiB so that any lzip
 file can be decompressed on 32-bit machines. Lzip provides accurate and
@@ -639,14 +641,19 @@ If no file names are specified, minilzip compresses (or decompresses) from
 standard input to standard output. A hyphen '-' used as a FILE argument
 means standard input. It can be mixed with other FILES and is read just
 once, the first time it appears in the command line. Remember to prepend
-'./' to any file name beginning with a hyphen, or use '--'.
+'./' to any file name beginning with a hyphen, or use '--'. It is the
+responsibility of the caller to check that the file names in the command
+line are valid. (For example, that they do not contain unprintable
+characters).
 
 minilzip supports the following options: *Note Argument syntax:
 (plzip)Argument syntax.
 
 '-h'
-'--help'
      Print an informative help message describing the options and exit.
+
+'--help'
+     Print the full help and exit.
 
 '-V'
 '--version'
@@ -708,7 +715,8 @@ minilzip supports the following options: *Note Argument syntax:
      When compressing, set the match length limit in bytes. After a match
      this long is found, the search is finished. Valid values range from 5
      to 273. Larger values usually give better compression ratios but
-     longer compression times.
+     longer compression times. A match is a Lempel-Ziv back-reference coded
+     as a distance-length pair.
 
 '-o FILE'
 '--output=FILE'
@@ -734,7 +742,7 @@ minilzip supports the following options: *Note Argument syntax:
      neither the file size nor this limit. Valid values range from 4 KiB to
      512 MiB. Values 12 to 29 are interpreted as powers of two, meaning
      2^12 to 2^29 bytes. Dictionary sizes are quantized so that they can be
-     coded in just one byte (*note coded-dict-size::). If the size
+     coded in just one byte (*note coded dict size::). If the size
      specified does not match one of the valid sizes, it is rounded upwards
      by adding up to (BYTES / 8) to it.
 
@@ -825,11 +833,13 @@ minilzip supports the following options: *Note Argument syntax:
      defined). *Note Library version::.
 
 
-   Numbers given as arguments to options may be expressed in decimal,
+Numbers given as arguments to options may be expressed in decimal,
 hexadecimal, or octal (using the same syntax as integer constants in C++),
-and may be followed by a multiplier and an optional 'B' for "byte".
+may contain underscore separators between groups of 3 or more digits (2 or
+more digits for hexadecimal), and may be followed by a multiplier and an
+optional 'B' for "byte". (1_234_567kB, 4KiB, 0x1234_5678, 07_777_777).
 
-   Table of SI and binary prefixes (unit multipliers):
+Table of SI and binary prefixes (unit multipliers):
 
 Prefix   Value                      |   Prefix   Value
 ----------------------------------------------------------------------
@@ -845,7 +855,7 @@ R        ronnabyte  (10^27)         |   Ri       robibyte  (2^90)
 Q        quettabyte (10^30)         |   Qi       quebibyte (2^100)
 
 
-   Exit status: 0 for a normal exit, 1 for environmental problems (file not
+Exit status: 0 for a normal exit, 1 for environmental problems (file not
 found, invalid command-line options, I/O errors, etc), 2 to indicate a
 corrupt or invalid input file, 3 for an internal consistency error (e.g.,
 bug) which caused minilzip to panic.
@@ -860,19 +870,19 @@ Perfection is reached, not when there is no longer anything to add, but
 when there is no longer anything to take away.
 -- Antoine de Saint-Exupery
 
-   In the diagram below, a box like this:
+In the diagram below, a box like this:
 
 +---+
 |   | <-- the vertical bars might be missing
 +---+
 
-   represents one byte; a box like this:
+represents one byte; a box like this:
 
 +==============+
 |              |
 +==============+
 
-   represents a variable number of bytes.
+represents a variable number of bytes.
 
 A lzip file consists of one or more independent "members" (compressed data
 sets). The members simply appear one after another in the file, with no
@@ -881,13 +891,13 @@ encode in compressed form up to 16 EiB - 1 byte of uncompressed data. The
 size of a multimember file is unlimited. Empty members (data size = 0) are
 not allowed in multimember files.
 
-   Each member has the following structure:
+Each member has the following structure:
 
 +--+--+--+--+----+----+=============+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 | ID string | VN | DS | LZMA stream | CRC32 |   Data size   |  Member size  |
 +--+--+--+--+----+----+=============+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   All multibyte values are stored in little endian order.
+All multibyte values are stored in little endian order.
 
 'ID string (the "magic" bytes)'
      A four byte string, identifying the lzip format, with the value "LZIP"
@@ -924,9 +934,9 @@ not allowed in multimember files.
      Total size of the member, including header and trailer. This field acts
      as a distributed index, improves the checking of stream integrity, and
      facilitates the safe recovery of undamaged members from multimember
-     files. Lzip limits the member size to 2 PiB to prevent the data size
-     field from overflowing.
-
+     files. The index is built by traversing the members backwards from the
+     end of the file. Lzip limits the member size to 2 PiB to prevent the
+     data size field from overflowing.
 
 
 File: lzlib.info,  Node: Examples,  Next: Problems,  Prev: File format,  Up: Top
@@ -938,7 +948,7 @@ This chapter provides real code examples for the most common uses of the
 library. See these examples in context in the files 'bbexample.c' and
 'ffexample.c' from the source distribution of lzlib.
 
-   Note that the interface of lzlib is symmetrical. That is, the code for
+Note that the interface of lzlib is symmetrical. That is, the code for
 normal compression and decompression is identical except because one calls
 LZ_compress* functions while the other calls LZ_decompress* functions.
 
@@ -1242,12 +1252,12 @@ in this manual. If you report them, they will get fixed. If you don't, no
 one will ever know about them and they will remain unfixed for all
 eternity, if not longer.
 
-   If you find a bug in lzlib, please send electronic mail to
+If you find a bug in lzlib, please send electronic mail to
 <lzip-bug@nongnu.org>. Include the version number, which you can find by
 running 'minilzip --version' and 'minilzip -v --check-lib'.
 
 
-File: lzlib.info,  Node: Concept index,  Prev: Problems,  Up: Top
+File: lzlib.info,  Node: Concept index,  Next: Function index,  Prev: Problems,  Up: Top
 
 Concept index
 *************
@@ -1276,32 +1286,103 @@ Concept index
 * parameter limits:                      Parameter limits.          (line 6)
 * skipping data errors:                  Skipping data errors.      (line 6)
 
+
+File: lzlib.info,  Node: Function index,  Prev: Concept index,  Up: Top
+
+Index of constants
+******************
+
+ [index ]
+* Menu:
+
+* LZ_API_VERSION:                        Library version.          (line 14)
+* LZ_bad_argument:                       Error codes.              (line 27)
+* LZ_data_error:                         Error codes.              (line 49)
+* LZ_header_error:                       Error codes.              (line 41)
+* LZ_library_error:                      Error codes.              (line 57)
+* LZ_mem_error:                          Error codes.              (line 31)
+* LZ_ok:                                 Error codes.              (line 23)
+* LZ_sequence_error:                     Error codes.              (line 35)
+* LZ_unexpected_eof:                     Error codes.              (line 46)
+* LZ_version_string:                     Library version.          (line 49)
+
+
+Index of functions
+******************
+
+ [index ]
+* Menu:
+
+* LZ_api_version:                        Library version.         (line  33)
+* LZ_compress_close:                     Compression functions.   (line  45)
+* LZ_compress_data_position:             Compression functions.   (line 139)
+* LZ_compress_errno:                     Compression functions.   (line 123)
+* LZ_compress_finish:                    Compression functions.   (line  52)
+* LZ_compress_finished:                  Compression functions.   (line 128)
+* LZ_compress_member_finished:           Compression functions.   (line 133)
+* LZ_compress_member_position:           Compression functions.   (line 144)
+* LZ_compress_open:                      Compression functions.   (line  13)
+* LZ_compress_read:                      Compression functions.   (line  95)
+* LZ_compress_restart_member:            Compression functions.   (line  61)
+* LZ_compress_sync_flush:                Compression functions.   (line  68)
+* LZ_compress_total_in_size:             Compression functions.   (line 149)
+* LZ_compress_total_out_size:            Compression functions.   (line 153)
+* LZ_compress_write:                     Compression functions.   (line 107)
+* LZ_compress_write_size:                Compression functions.   (line 112)
+* LZ_decompress_close:                   Decompression functions. (line  23)
+* LZ_decompress_data_crc:                Decompression functions. (line 124)
+* LZ_decompress_data_position:           Decompression functions. (line 130)
+* LZ_decompress_dictionary_size:         Decompression functions. (line 120)
+* LZ_decompress_errno:                   Decompression functions. (line  97)
+* LZ_decompress_finish:                  Decompression functions. (line  30)
+* LZ_decompress_finished:                Decompression functions. (line 102)
+* LZ_decompress_member_finished:         Decompression functions. (line 108)
+* LZ_decompress_member_position:         Decompression functions. (line 135)
+* LZ_decompress_member_version:          Decompression functions. (line 116)
+* LZ_decompress_open:                    Decompression functions. (line  12)
+* LZ_decompress_read:                    Decompression functions. (line  57)
+* LZ_decompress_reset:                   Decompression functions. (line  38)
+* LZ_decompress_sync_to_member:          Decompression functions. (line  44)
+* LZ_decompress_total_in_size:           Decompression functions. (line 140)
+* LZ_decompress_total_out_size:          Decompression functions. (line 144)
+* LZ_decompress_write:                   Decompression functions. (line  83)
+* LZ_decompress_write_size:              Decompression functions. (line  88)
+* LZ_max_dictionary_bits:                Parameter limits.        (line  17)
+* LZ_max_dictionary_size:                Parameter limits.        (line  20)
+* LZ_max_match_len_limit:                Parameter limits.        (line  26)
+* LZ_min_dictionary_bits:                Parameter limits.        (line  10)
+* LZ_min_dictionary_size:                Parameter limits.        (line  14)
+* LZ_min_match_len_limit:                Parameter limits.        (line  23)
+* LZ_strerror:                           Error messages.          (line   7)
+* LZ_version:                            Library version.         (line  53)
+
 
 
 Tag Table:
 Node: Top215
-Node: Introduction1337
-Node: Library version5500
-Node: Buffering8051
-Node: Parameter limits9276
-Node: Compression functions10230
-Ref: member_size12006
-Ref: sync_flush13747
-Node: Decompression functions18313
-Node: Error codes25700
-Node: Error messages28045
-Node: Invoking minilzip28628
-Node: File format39710
-Ref: coded-dict-size41208
-Node: Examples42615
-Node: Buffer compression43576
-Node: Buffer decompression45089
-Node: File compression46496
-Node: File decompression47472
-Node: File compression mm48469
-Node: Skipping data errors51480
-Node: Problems52778
-Node: Concept index53339
+Node: Introduction1391
+Node: Library version5515
+Node: Buffering8065
+Node: Parameter limits9284
+Node: Compression functions10238
+Ref: member_size12015
+Ref: sync_flush13756
+Node: Decompression functions18322
+Node: Error codes25709
+Node: Error messages28298
+Node: Invoking minilzip28881
+Node: File format40378
+Ref: coded dict size41861
+Node: Examples43353
+Node: Buffer compression44311
+Node: Buffer decompression45824
+Node: File compression47231
+Node: File decompression48207
+Node: File compression mm49204
+Node: Skipping data errors52215
+Node: Problems53513
+Node: Concept index54071
+Node: Function index55754
 
 End Tag Table
 

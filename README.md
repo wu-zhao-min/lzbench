@@ -52,58 +52,68 @@ For complete building instruction, with troubleshooting refer to [BUILD.md](BUIL
 Supported compressors
 -------------------------
 
- - [brieflz 1.3.0](https://github.com/jibsen/brieflz)
- - [brotli 1.2.0](https://github.com/google/brotli)
- - [bsc 3.3.11](https://github.com/IlyaGrebnov/libbsc)
- - [bzip2 1.0.8](https://www.sourceware.org/bzip2/downloads.html)
- - [bzip3 1.5.2](https://github.com/kspalaiologos/bzip3)
- - [crush 1.0](https://sourceforge.net/projects/crush/)
- - [density 0.16.6](https://github.com/g1mv/density)
- - [fastlz 0.5.0](https://github.com/ariya/FastLZ)
- - [fast-lzma2 1.0.1](https://github.com/conor42/fast-lzma2)
- - [glza 0.12](https://encode.su/threads/2427-GLZA)
- - [kanzi 2.5.1](https://github.com/flanglet/kanzi-cpp)
- - [libdeflate v1.24](https://github.com/ebiggers/libdeflate)
- - [lizard v2.1](https://github.com/inikep/lizard)
- - [lz4/lz4hc v1.10.0](https://github.com/lz4/lz4)
- - [lzav 5.7](https://github.com/avaneev/lzav)
- - [lzf 3.6](http://software.schmorp.de/pkg/liblzf.html)
- - [lzfse/lzvn 1.0](https://github.com/lzfse/lzfse)
- - [lzg 1.0.10](https://github.com/mbitsnbites/liblzg)
- - [lzham 1.0](https://github.com/richgel999/lzham_codec)
- - lzjb 2010
- - [lzlib 1.15](http://www.nongnu.org/lzip)
- - [lzma v25.01](http://7-zip.org)
- - [lzo 2.10](http://www.oberhumer.com/opensource/lzo)
- - [lzsse 2019-04-18 (1847c3e827)](https://github.com/ConorStokes/LZSSE)
- - [memlz 0.2 beta](https://github.com/rrrlasse/memlz)
- - [nvcomp 2.2.0](https://github.com/NVIDIA/nvcomp) - if CUDA is available
- - [ppmd8 25.01](http://7-zip.org)
- - [quicklz to 1.5.1 beta 7](https://web.archive.org/web/20160110073818/https://quicklz.com/)
- - [slz 1.2.1](http://www.libslz.org/) - only a compressor, uses zlib for decompression
- - [snappy 1.2.2](https://github.com/google/snappy)
- - [tamp 2.1.0](https://github.com/BrianPugh/tamp)
- - [tornado 0.6a](https://encode.su/threads/231-FreeArc-compression-suite-%284x4-Tornado-REP-Delta-Dict-%29)
- - [ucl 1.03](http://www.oberhumer.com/opensource/ucl/)
- - [xz 5.8.1](https://github.com/tukaani-project/xz)
- - [zlib 1.3.1](http://zlib.net)
- - [zlib-ng 2.2.5](https://github.com/zlib-ng/zlib-ng)
- - [zling 2018-10-12](https://github.com/richox/libzling) - according to the author using libzling in a production environment is not a good idea
- - [zpaq 7.15](https://github.com/zpaq/zpaq)
- - [zstd 1.5.7](https://github.com/facebook/zstd)
- - [zxc 0.10.0](https://github.com/hellobertrand/zxc)
+The table below lists the supported compressors. The Last update column is the
+release date of the bundled version. Compressors are built on every CI platform
+(Linux x86-64/x86-32/ARM64/ARM32/PPC64LE, macOS arm64, Windows MinGW) unless the
+Notes column says otherwise.
 
-**Warning**: The compressors listed below have security issues and/or are
-no longer maintained. For information about the security of the various compressors,
-see the [CompFuzz Results](https://github.com/nemequ/compfuzz/wiki/Results) page.
+| Compressor | Last update | Notes |
+| :--- | :--- | :--- |
+| [aceapex 1.0](https://github.com/yasha1971-coder/aceapex) | 2026-04-24 | |
+| [brieflz 1.3.0](https://github.com/jibsen/brieflz) | 2020-02-15 | |
+| [brotli 1.2.0](https://github.com/google/brotli) | 2025-10-27 | |
+| [bsc 3.3.12](https://github.com/IlyaGrebnov/libbsc) | 2025-09-10 | Disabled on 32-bit ARM — multithreaded decompress faults (SIGBUS, lzbench#293) |
+| [bzip2 1.0.8](https://www.sourceware.org/bzip2/downloads.html) | 2019-07-13 | |
+| [bzip3 1.5.3](https://github.com/kspalaiologos/bzip3) | 2025-08-13 | |
+| [crush 1.0](https://sourceforge.net/projects/crush/) | 2013-07-01 | |
+| [density 0.16.6](https://github.com/g1mv/density) | 2025-08-27 | Linux x86-64 and macOS only — requires the Rust toolchain (skipped for 32-bit, cross-compiled and Windows builds) |
+| [fastlz 0.5.0](https://github.com/ariya/FastLZ) | 2020-02-02 | |
+| [fast-lzma2 1.0.1](https://github.com/conor42/fast-lzma2) | 2019-05-06 | |
+| [glza 0.12](https://encode.su/threads/2427-GLZA) | 2026-03-23 | |
+| [kanzi 2.5.3](https://github.com/flanglet/kanzi-cpp) | 2026-04-22 | |
+| [libdeflate v1.25](https://github.com/ebiggers/libdeflate) | 2025-11-01 | |
+| [lizard v2.1](https://github.com/inikep/lizard) | 2025-01-26 | |
+| [lz4/lz4hc v1.10.0](https://github.com/lz4/lz4) | 2024-07-21 | |
+| [lzav 5.9](https://github.com/avaneev/lzav) | 2026-06-22 | |
+| [lzf 3.6](http://software.schmorp.de/pkg/liblzf.html) | 2014-03-13 | |
+| [lzfse/lzvn 1.0](https://github.com/lzfse/lzfse) | 2017-03-08 | |
+| [lzg 1.0.10](https://github.com/mbitsnbites/liblzg) | 2018-11-29 | |
+| [lzham 1.0](https://github.com/richgel999/lzham_codec) | 2015-01-25 | Disabled on macOS and 32-bit x86 — 64 MB dictionary overflows the 32-bit address space |
+| lzjb 2010 | 2010 | |
+| [lzlib 1.16](https://www.nongnu.org/lzip/lzlib.html) | 2026-03-11 | |
+| [lzma v26.01](http://7-zip.org) | 2026-04-27 | |
+| [lzo 2.10](http://www.oberhumer.com/opensource/lzo) | 2017-03-01 | |
+| [lzsse 2019-04-18 (1847c3e827)](https://github.com/ConorStokes/LZSSE) | 2019-04-18 | 64-bit x86 only — requires SSE4.1 (Windows: MinGW-w64 only); lzsse8fast has a [bug](https://github.com/ConorStokes/LZSSE/issues/14) |
+| [memlz 0.2 beta](https://github.com/rrrlasse/memlz) | 2025-11-03 | Disabled on 32-bit ARM — unaligned access faults (SIGBUS) |
+| [nvcomp 2.2.0](https://github.com/NVIDIA/nvcomp) | 2022-02-07 | CUDA only — built with `make ENABLE_CUDA=1`; not in the default CI matrix |
+| [openzl 0.2.0](https://openzl.org/) | 2026-05-07 | 64-bit only — upstream does not support 32-bit builds |
+| [ppmd8 26.01](http://7-zip.org) | 2026-04-27 | |
+| [quicklz 1.5.1 beta 7](https://web.archive.org/web/20160110073818/https://quicklz.com/) | 2011-10-07 | |
+| [skim 0.1.0](https://github.com/vantorrewannes/skim) | 2026-06-07 | Linux x86-64 and macOS only — requires the [Zig](https://ziglang.org) compiler |
+| [slz 1.2.2](http://www.libslz.org/) | 2026-04-09 | Compressor only; decompresses via zlib |
+| [snappy 1.2.2](https://github.com/google/snappy) | 2025-03-26 | |
+| [tamp 2.2.4](https://github.com/BrianPugh/tamp) | 2026-06-11 | |
+| [tornado 0.6a](https://encode.su/threads/231-FreeArc-compression-suite-%284x4-Tornado-REP-Delta-Dict-%29) | 2014-03-08 | Disabled on RISC-V (unaligned access) |
+| [ucl 1.03](http://www.oberhumer.com/opensource/ucl/) | 2004-07-20 | |
+| [xz 5.8.3](https://github.com/tukaani-project/xz) | 2026-03-31 | |
+| [yalz77 2022-07-06](https://github.com/ivan-tkatchev/yalz77) | 2022-07-06 | |
+| [zlib 1.3.2](http://zlib.net) | 2026-02-17 | |
+| [zlib-ng 2.3.3](https://github.com/zlib-ng/zlib-ng) | 2026-02-03 | |
+| [zling 2018-10-12](https://github.com/richox/libzling) | 2018-10-12 | Disabled on big-endian PowerPC; not recommended for production use (per author) |
+| [zpaq 7.15](https://github.com/zpaq/zpaq) | 2016-08-17 | Slower on non-x86 — built with `-DNOJIT` (x86-only JIT, portable interpreter elsewhere) |
+| [zstd 1.5.7](https://github.com/facebook/zstd) | 2025-02-19 | |
+| [zxc 0.12.0](https://github.com/hellobertrand/zxc) | 2026-06-18 | |
 
- - [csc 2016-10-13](https://github.com/fusiyuan2010/CSC): May cause a segmentation fault when compiled with Apple LLVM version 7.3.0 (clang-703.0.31).
- - [gipfeli 2016-07-13](https://github.com/google/gipfeli): Contains bugs causing decompression file mismatch when compiled with GCC 14.2 using -O3.
- - [lzmat 1.01 v1.0](https://github.com/nemequ/lzmat): Contains decompression bugs and may cause a segmentation fault when compiled with GCC 4.9+ using -O3 optimization.
- - [lzrw 15-Jul-1991](https://en.wikipedia.org/wiki/LZRW): May trigger a segmentation fault when compiled with GCC 4.9+ using -O3.
- - [wflz 2015-09-16](https://github.com/ShaneWF/wflz): May result in a segmentation fault when compiled with GCC 4.9+ using -O3.
- - [yalz77 2022-07-06](https://github.com/ivan-tkatchev/yalz77): A segmentation fault was encountered with GCC 13.3.0 on a 32-bit ARM (arm-linux-gnueabi) target.
- - [yappy 2014-03-22](https://encode.su/threads/2825-Yappy-(working)-compressor): A segmentation fault was observed with GCC 13.3.0 on a 32-bit ARM (arm-linux-gnueabi) system.
+**Warning**: The compressors listed below have security issues and/or are no longer maintained.
+
+| Compressor | Last update | Notes |
+| :--- | :--- | :--- |
+| [csc 2016-10-13](https://github.com/fusiyuan2010/CSC) | 2016-10-13 | Disabled on macOS — segfaults with Apple LLVM 7.3.0 (clang-703.0.31) |
+| [gipfeli 2016-07-13](https://github.com/google/gipfeli) | 2016-07-13 | Decompression file mismatch when compiled with GCC 14.2 using -O3 |
+| [lzmat 1.01 v1.0](https://github.com/nemequ/lzmat) | 2008-07-08 | Decompression bugs; may segfault with GCC 4.9+ using -O3 |
+| [lzrw 15-Jul-1991](https://en.wikipedia.org/wiki/LZRW) | 1991-07-15 | May segfault with GCC 4.9+ using -O3 |
+| [wflz 2015-09-16](https://github.com/ShaneWF/wflz) | 2015-09-16 | May segfault with GCC 4.9+ using -O3 |
+| [yappy 2014-03-22](https://encode.su/threads/2825-Yappy-(working)-compressor) | 2014-03-22 | Disabled on big-endian PowerPC; segfault with GCC 13.3.0 on 32-bit ARM (arm-linux-gnueabi) |
 
 Benchmarks
 -------------------------

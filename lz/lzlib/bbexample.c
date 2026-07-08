@@ -1,5 +1,5 @@
 /* Buffer to buffer example - Test program for the library lzlib
-   Copyright (C) 2010-2025 Antonio Diaz Diaz.
+   Copyright (C) 2010-2026 Antonio Diaz Diaz.
 
    This program is free software: you have unlimited permission
    to copy, distribute, and modify it.
@@ -339,7 +339,7 @@ int fixed_test( const uint8_t * const inbuf, const int insize )
 int main( const int argc, const char * const argv[] )
   {
   int retval = 0, i;
-  int open_failures = 0;
+  unsigned open_failures = 0;
   const bool verbose = argc > 2;
 
   if( argc < 2 )
@@ -360,7 +360,7 @@ int main( const int argc, const char * const argv[] )
     free( inbuf );
     }
   if( open_failures > 0 && verbose )
-    fprintf( stderr, "bbexample: warning: %d %s failed to open.\n",
+    fprintf( stderr, "bbexample: warning: %u %s failed to open.\n",
              open_failures, ( open_failures == 1 ) ? "file" : "files" );
   if( retval == 0 && open_failures ) retval = 1;
   return retval;

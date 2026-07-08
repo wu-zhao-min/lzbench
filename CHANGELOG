@@ -1,12 +1,41 @@
-v2.x.y (work in progress)
-- updated tamp to 2.1.0 (thanks to @tansy)
+v2.x.y
+- added OpenZL v0.2.0 (thanks to @fwyzard)
+- updated zxc to 0.12.0
+
+v2.3 (Jun 15, 2026)
+- improvement: Reorganized compressor alias groups by type — ALL is now a composite of LZ /
+               SYMMETRIC / MISC; BWT/PPM codecs (bsc, bzip2, bzip3, ppmd8) moved to SYMMETRIC,
+               and kanzi is split by per-level algorithm between LZ and SYMMETRIC
+- improvement: Added the FASTEST alias (every ALL compressor at only its fastest level) and a
+               new SLOW alias for very slow compressors (glza)
+- improvement: CUDA codecs are now disabled by default and built only with ENABLE_CUDA=1
+- improvement: BSC now handles blocks larger than its input limit by splitting them into chunks
+               (thanks to @flanglet); the codec max input size is a codec property used when sizing buffers
+- improvement: added -mno-strict-align build flag and SNAPPY_HAVE_RVV macro for RISC-V
+               (thanks to @anthony-zy); various platform fixes for 32-bit x86 (lzham), 32-bit ARM,
+               and Windows file size handling
+- fix: account for codec chunk split buffer overhead when allocating the compression buffer
+- added aceapex 1.0 (thanks to @yasha1971-coder)
+- added aceapex_cuda 0.9 — optional CUDA decoder for the aceapex format (thanks to @yasha1971-coder)
 - added memlz 0.2 beta (thanks to @rrrlasse)
-- added zxc 0.10.0 (thanks to @hellobertrand)
+- added skim 0.1.0 (thanks to @VantorreWannes)
+- added zxc 0.11.0 (thanks to @hellobertrand)
 - updated brotli to 1.2.0 (thanks to @data-man)
+- updated bzip3 to v1.5.3 (thanks to @inikep)
 - updated glza to v0.12 (thanks to @tansy)
-- updated kanzi to 2.5.1 (thanks to @flanglet)
-- updated lzav to 5.7 (thanks to @avaneev)
-- updated quicklz to 1.5.1 beta 7
+- updated kanzi to 2.5.3 (thanks to @flanglet)
+- updated libbsc to v3.3.12 (thanks to @inikep)
+- updated libdeflate to v1.25 (thanks to @tansy)
+- updated lzav to 5.8 (thanks to @avaneev)
+- updated lzlib to 1.16 (thanks to @inikep)
+- updated lzma to 26.01 (thanks to @inikep)
+- updated ppmd8 to 26.01 (thanks to @inikep)
+- updated quicklz to 1.5.1 beta 7 (thanks to @inikep)
+- updated slz to 1.2.2 (thanks to @inikep)
+- updated tamp to 2.2.4 (thanks to @tansy)
+- updated xz to 5.8.3 (thanks to @inikep)
+- updated zlib to 1.3.2 (thanks to @inikep)
+- updated zlib-ng to 2.3.3 (thanks to @inikep)
 
 v2.2 (Oct 28, 2025)
 - improvement: Automatic chunk size splitting for multi-threading (-T) when -b is not specified
